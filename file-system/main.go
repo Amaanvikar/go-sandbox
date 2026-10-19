@@ -20,6 +20,7 @@ func main() {
 	router.GET("/api/health", controllers.GetHealth)
 
 	router.POST("/upload", controllers.UploadFile)
+	router.GET("/files", controllers.GetUpload)
 
 	fmt.Println("Server started at :8080")
 

@@ -73,3 +73,46 @@ func UploadFile(c *gin.Context) {
 		"size":         fileSize,
 	})
 }
+
+func GetUpload(c *gin.Context) {
+	rows, err := database.DB.Query(
+		`SELECT id, filename, content_type, size_bytes
+		FROM uploaded_files`,
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to get the file",
+		})
+		return
+	}
+	defer rows.Close()
+
+	var files []gin.H
+
+	for rows.Next() {
+		var id int64
+		var filename, contentType string
+		var sizeBytes int64
+
+		if err := rows.Scan(&id, &filename, &contentType, &sizeBytes); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read files"})
+			return
+		}
+
+		files = append(files, gin.H{
+			"id":           id,
+			"filename":     filename,
+			"content_type": contentType,
+			"size_bytes":   sizeBytes,
+		})
+	}
+
+	if err := rows.Err(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to read files",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, files)
+}
