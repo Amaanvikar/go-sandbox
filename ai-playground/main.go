@@ -6,6 +6,7 @@ import (
 
 	"ai-playground/config"
 	"ai-playground/controllers"
+	"ai-playground/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +17,7 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
+	router.Use(middleware.LoggerMiddleware())
 
 	router.GET("/health", controllers.GetHealth)
 	router.POST("/api/chat", controllers.PostChat)
