@@ -5,8 +5,7 @@ import (
 	"log"
 
 	"ai-playground/config"
-	"ai-playground/controllers"
-	"ai-playground/middleware"
+	"ai-playground/router"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,16 +15,12 @@ func main() {
 	config.LoadDotEnv(".env")
 
 	gin.SetMode(gin.ReleaseMode)
-	router := gin.Default()
-	router.Use(middleware.RequestIDMiddleware())
-	router.Use(middleware.LoggerMiddleware())
 
-	router.GET("/health", controllers.GetHealth)
-	router.POST("/api/chat", controllers.PostChat)
+	r := router.SetupRouter()
 
 	fmt.Println("server running on :8080")
 
-	if err := router.Run(":8080"); err != nil {
+	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
 }
